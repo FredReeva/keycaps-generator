@@ -68,13 +68,15 @@ $fn = 100;
 
 base_side = 16;
 
-if (fmt == "lshift") {base_side_h = base_side+5;}
-else if (fmt == "rshift" || fmt == "capslock") {base_side_h = base_side + 14;}
-else if (fmt == "tab") {base_side_h = base_side + 10;}
-else if (fmt == "backspace") {base_side_h = base_side + 19;}
-else if (fmt == "space") {base_side_h = base_side + 95;}
-else if (fmt == "enter") {base_side_h = base_side + 4;}
-else {base_side_h=base_side;}
+base_side_w = (fmt == "lshift") ? base_side+5 :
+(fmt == "rshift") ? base_side+14 :
+(fmt == "capslock") ? base_side+14 :
+(fmt == "tab") ? base_side+10 :
+(fmt == "backspace") ? base_side+19 :
+(fmt == "space") ? base_side+95 :
+(fmt == "enter") ? base_side+4 :
+base_side;
+
 
 base_height = 2;
 fillet_radius = 2.5;
@@ -101,14 +103,14 @@ module roundedBase() {
             if (fmt == "enter") {
                 
                     union() {
-                        square([base_side_h, base_side+19], center = true);
-                        translate([(base_side_h)/2, (base_side+19)/4])
+                        square([base_side_w, base_side+19], center = true);
+                        translate([(base_side_w)/2, (base_side+19)/4])
                             square([base_side*0.45, (base_side+19)/2], center = true);
                     }
           
             }
             
-            else square([base_side_h, base_side], center = true);
+            else square([base_side_w, base_side], center = true);
 }
 
 module baseBlock() {
@@ -126,7 +128,7 @@ module crossCutout() {
 module crossSupport() {
     translate([0,0,cyl_height-0.2]) {
     union() {
-        cube([base_side_h, 0.5, 0.4], center=true);
+        //cube([base_side_w, 0.5, 0.4], center=true);
         cube([0.5,base_side, 0.4], center=true); 
     }
     }
@@ -148,14 +150,14 @@ module engravedCylinder() {
     translate([space_stab_d, 0, 0])
     difference() {
 
-        cylinder(d = cyl_diameter, h = cyl_height);
+        supportedCylinder();
         translate([0, 0, cyl_height - cross_depth / 2 + eps])
             crossCutout();
     }
     translate([-space_stab_d, 0, 0])
     difference() {
 
-        cylinder(d = cyl_diameter, h = cyl_height);
+        supportedCylinder();
         translate([0, 0, cyl_height - cross_depth / 2 + eps])
             crossCutout();
     }
@@ -164,14 +166,14 @@ module engravedCylinder() {
     translate([0, enter_stab_d, 0])
     difference() {
 
-        cylinder(d = cyl_diameter, h = cyl_height);
+        supportedCylinder();
         translate([0, 0, cyl_height - cross_depth / 2 + eps])
             crossCutout();
     }
     translate([0, -enter_stab_d, 0])
     difference() {
 
-        cylinder(d = cyl_diameter, h = cyl_height);
+        supportedCylinder();
         translate([0, 0, cyl_height - cross_depth / 2 + eps])
             crossCutout();
     }
