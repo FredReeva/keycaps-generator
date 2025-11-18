@@ -76,7 +76,7 @@ def merge_3mf(base_path, text_path, output_path):
     if build_node is not None:
         base_root.remove(build_node)
     build_node = ET.SubElement(base_root, f"{{{NAMESPACE['m']}}}build")
-    ET.SubElement(build_node, f"{{{NAMESPACE['m']}}}item", {"objectid": parent_id})format
+    ET.SubElement(build_node, f"{{{NAMESPACE['m']}}}item", {"objectid": parent_id})
 
     ET.register_namespace('', NAMESPACE['m'])
 

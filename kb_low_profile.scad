@@ -14,65 +14,68 @@ function italian_map(raw) =
     raw == "0_10" ? "0=" :
     raw == "0_11" ? "'?" :
     raw == "0_12" ? "ì^" :
-    raw == "1_0" ? "q" :
-    raw == "1_1" ? "w" :
-    raw == "1_2" ? "e" :
-    raw == "1_3" ? "r" :
-    raw == "1_4" ? "t" :
-    raw == "1_5" ? "y" :
-    raw == "1_6" ? "u" :
-    raw == "1_7" ? "i" :
-    raw == "1_8" ? "o" :
-    raw == "1_9" ? "p" :
+    raw == "1_0" ? "Q" :
+    raw == "1_1" ? "W" :
+    raw == "1_2" ? "E" :
+    raw == "1_3" ? "R" :
+    raw == "1_4" ? "T" :
+    raw == "1_5" ? "Y" :
+    raw == "1_6" ? "U" :
+    raw == "1_7" ? "I" :
+    raw == "1_8" ? "O" :
+    raw == "1_9" ? "P" :
     raw == "1_10" ? "è[é{" :
     raw == "1_11" ? "+]*}" :
-    raw == "2_0" ? "a" :
-    raw == "2_1" ? "s" :
-    raw == "2_2" ? "d" :
-    raw == "2_3" ? "f" :
-    raw == "2_4" ? "g" :
-    raw == "2_5" ? "h" :
-    raw == "2_6" ? "j" :
-    raw == "2_7" ? "k" :
-    raw == "2_8" ? "l" :
+    raw == "2_0" ? "A" :
+    raw == "2_1" ? "S" :
+    raw == "2_2" ? "D" :
+    raw == "2_3" ? "F" :
+    raw == "2_4" ? "G" :
+    raw == "2_5" ? "H" :
+    raw == "2_6" ? "J" :
+    raw == "2_7" ? "K" :
+    raw == "2_8" ? "L" :
     raw == "2_9" ? "ò@ç" :
     raw == "2_10" ? "à#°" :
     raw == "2_11" ? "ù§" :
     raw == "3_0" ? "<>" :
-    raw == "3_1" ? "z" :
-    raw == "3_2" ? "x" :
-    raw == "3_3" ? "c" :
-    raw == "3_4" ? "v" :
-    raw == "3_5" ? "b" :
-    raw == "3_6" ? "n" :
-    raw == "3_7" ? "m" :
-    raw == "3_8" ? "n" :
-    raw == "3_9" ? "m" :
-    raw == "3_10" ? ",;" :
-    raw == "3_11" ? ".:" :
-    raw == "3_12" ? "-_" :
-    raw == "a_l" ? "←" :
-    raw == "a_r" ? "→" :
-    raw == "a_u" ? "↑" :
-    raw == "a_d" ? "↓" :
+    raw == "3_1" ? "Z" :
+    raw == "3_2" ? "X" :
+    raw == "3_3" ? "C" :
+    raw == "3_4" ? "V" :
+    raw == "3_5" ? "B" :
+    raw == "3_6" ? "N" :
+    raw == "3_7" ? "M" :
+    raw == "3_8" ? ",;" :
+    raw == "3_9" ? ".:" :
+    raw == "3_10" ? "-_" :
+    raw == "a_l" ? "◀" :
+    raw == "a_r" ? "▶" :
+    raw == "a_u" ? "▲" :
+    raw == "a_d" ? "▼" :
     raw == "win" ? "■■■■" :
     raw; // fallback: use raw input
 
-raw_letter = "text_Enter";
+raw_letter = "text_PrtSc";
 letter = italian_map(raw_letter);
 
-
+support = true;
 part = "base";
-fmt = "enter";
+fmt = "std";
 
 len_str = len(letter);
 $fn = 100;
 
-base_side = 18;
-enter_h1 = 37;
-enter_w1 = 22;
-enter_w2 = 26;
-enter_h2 = 18.5;
+base_side = 16;
+
+if (fmt == "lshift") {base_side_h = base_side+5;}
+else if (fmt == "rshift" || fmt == "capslock") {base_side_h = base_side + 14;}
+else if (fmt == "tab") {base_side_h = base_side + 10;}
+else if (fmt == "backspace") {base_side_h = base_side + 19;}
+else if (fmt == "space") {base_side_h = base_side + 95;}
+else if (fmt == "enter") {base_side_h = base_side + 4;}
+else {base_side_h=base_side;}
+
 base_height = 2;
 fillet_radius = 2.5;
 eps = 0.01;
@@ -82,32 +85,30 @@ enter_stab_d = 12;
 cyl_diameter = 5.75;
 cyl_height = 4;
 
-cross_width = 1.3;
-cross_length = 4.5;
+cross_width = 1.2;
+cross_length = 4.3;
 cross_depth = cyl_height;
 
-emboss_height = 0.5;
+emboss_height = 0.1;
 
+distance_factor = (letter == "■■■■") ? 0.1 : 0.18;
+pos = base_side * distance_factor;
 text_divisor = (len_str == 1) ? 2.5 : ((len_str == 2) ? 4 : (len_str > 4) ? 5 : 4);
 
 module roundedBase() {
     offset(r = fillet_radius)
         offset(delta = -fillet_radius)
-            if (fmt == "lshift") square([base_side + 5, base_side], center = true);
-            else if (fmt == "rshift" || fmt == "capslock") square([base_side + 14, base_side], center = true);
-            else if (fmt == "tab") square([base_side + 10, base_side], center = true);
-            else if (fmt == "backspace") square([base_side + 19, base_side], center = true);
-            else if (fmt == "enter") {
+            if (fmt == "enter") {
                 
                     union() {
-                        square([enter_w1, enter_h1], center = true);
-                        translate([((enter_w2)-(enter_w1))/2, (enter_h2)/2])
-                            square([enter_w2, enter_h2], center = true);
+                        square([base_side_h, base_side+19], center = true);
+                        translate([(base_side_h)/2, (base_side+19)/4])
+                            square([base_side*0.45, (base_side+19)/2], center = true);
                     }
           
             }
-            else if (fmt == "space") square([base_side +95, base_side], center = true);
-            else square([base_side, base_side], center = true);
+            
+            else square([base_side_h, base_side], center = true);
 }
 
 module baseBlock() {
@@ -122,9 +123,24 @@ module crossCutout() {
     }
 }
 
+module crossSupport() {
+    translate([0,0,cyl_height-0.2]) {
+    union() {
+        cube([base_side_h, 0.5, 0.4], center=true);
+        cube([0.5,base_side, 0.4], center=true); 
+    }
+    }
+}
+
+module supportedCylinder() {
+    cylinder(d = cyl_diameter, h = cyl_height);
+    crossSupport();
+
+}
+
 module engravedCylinder() {
     difference() {
-        cylinder(d = cyl_diameter, h = cyl_height);
+        supportedCylinder();
         translate([0, 0, cyl_height - cross_depth / 2 + eps])
             crossCutout();
     }
@@ -178,21 +194,21 @@ module engraved1Layout() {
 }
 
 module engraved2Layout() {
-    engravedSymbol(substr(letter, 0, 1), 0, -base_side * 0.18);
-    engravedSymbol(substr(letter, 1), 0, base_side * 0.18);
+    engravedSymbol(substr(letter, 0, 1), 0, -pos);
+    engravedSymbol(substr(letter, 1), 0, pos);
 }
 
 module engraved3Layout() {
-    engravedSymbol(substr(letter, 0, 1), base_side * 0.18, -base_side * 0.18);
-    engravedSymbol(substr(letter, 1, 1), -base_side * 0.18, -base_side * 0.18);
-    engravedSymbol(substr(letter, 2), base_side * 0.18, base_side * 0.18);
+    engravedSymbol(substr(letter, 0, 1), pos, -pos);
+    engravedSymbol(substr(letter, 1, 1), -pos, -pos);
+    engravedSymbol(substr(letter, 2), pos, pos);
 }
 
 module engraved4Layout() {
-    engravedSymbol(substr(letter, 0, 1), base_side * 0.18, -base_side * 0.18);
-    engravedSymbol(substr(letter, 1, 1), -base_side * 0.18, -base_side * 0.18);
-    engravedSymbol(substr(letter, 2, 1), base_side * 0.18, base_side * 0.18);
-    engravedSymbol(substr(letter, 3), -base_side * 0.18, base_side * 0.18);
+    engravedSymbol(substr(letter, 0, 1), pos, -pos);
+    engravedSymbol(substr(letter, 1, 1), -pos, -pos);
+    engravedSymbol(substr(letter, 2, 1), pos, pos);
+    engravedSymbol(substr(letter, 3), -pos, pos);
 }
 
 module engravedTextLayout() {
@@ -212,9 +228,30 @@ if (part == "base") {
         baseBlock();
         render_text();  // subtract engraved letters
     }
+    
+    
+    
+if (support) {
+    // border for support
+    difference(){
+    {translate([0, 0, base_height])
+    linear_extrude(height = cyl_height)
+    
+    roundedBase();
+    }
+    
+    {translate([0, 0, base_height-eps])
+    linear_extrude(height = cyl_height+2*eps)
+    offset(r = -0.6)
+    
+    roundedBase();
+    }
+    }
+}
 
     translate([0, 0, base_height])
-        engravedCylinder();
+    engravedCylinder();
+
 }
 
 if (part == "text") {
